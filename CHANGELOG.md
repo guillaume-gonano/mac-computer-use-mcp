@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The agent cursor glides over 0.6 s with a gentle start and landing, so the motion stays visible and the click lands as it arrives (it used to cover 80% of the way in 0.1 s, then creep).
+
 ## 0.1.1 (2026-10-15)
 
 - Fix: the agent cursor now glides to each target before acting. It used to appear and sway without moving, because macOS silently ignores animated `setFrameOrigin` on a window.

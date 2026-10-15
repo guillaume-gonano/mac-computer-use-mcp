@@ -15,7 +15,7 @@ let BADGE_SYMBOL = "rectangle.inset.filled.and.person.filled", BADGE_IDLE: TimeI
 let BADGE_COLOR = NSColor(srgbRed: 0.42, green: 0.39, blue: 0.96, alpha: 1)
 let BADGE_SIZE = NSSize(width: 66, height: 20), MENU_BADGE_SIZE = NSSize(width: 38, height: 22)
 let BADGE_OFFSET = CGPoint(x: 5, y: 6) // pill top-left from the window's top-left when no traffic lights are found
-let CURSOR_IDLE: TimeInterval = 20, CURSOR_GLIDE: TimeInterval = 0.42, CURSOR_PANEL: CGFloat = 64 // tip at its center
+let CURSOR_IDLE: TimeInterval = 20, CURSOR_GLIDE: TimeInterval = 0.6, CURSOR_PANEL: CGFloat = 64 // tip at its center
 
 func pillImage(_ size: NSSize, symbolSize: CGFloat) -> NSImage {
     let config = NSImage.SymbolConfiguration(pointSize: symbolSize, weight: .medium).applying(.init(paletteColors: [.white]))
@@ -195,7 +195,9 @@ public final class Indicator {
         cursorTip = CGPoint(x: at.x - bounds.minX, y: at.y - bounds.minY)
         NSAnimationContext.runAnimationGroup {
             $0.duration = reduceMotion ? 0 : CURSOR_GLIDE
-            $0.timingFunction = CAMediaTimingFunction(controlPoints: 0.3, 0.7, 0.2, 1)
+            // Gentle start and landing, so the glide stays visible all the way and the click lands as it arrives
+            // (the old fast-start curve covered 80% of the way in 0.1 s, then crept: it looked like a jump, then a late click).
+            $0.timingFunction = CAMediaTimingFunction(controlPoints: 0.4, 0, 0.2, 1)
             // setFrameOrigin is not animatable: the animator drops it silently and the cursor never moves. setFrame glides.
             cursor.animator().setFrame(NSRect(origin: cursorOrigin(at), size: cursor.frame.size), display: true)
         }
