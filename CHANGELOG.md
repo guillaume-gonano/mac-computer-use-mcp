@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 (2026-10-15)
+
+- Fix: the agent cursor now glides to each target before acting. It used to appear and sway without moving, because macOS silently ignores animated `setFrameOrigin` on a window.
+
 ## 0.1.0 (2026-10-15)
 
 First public release.

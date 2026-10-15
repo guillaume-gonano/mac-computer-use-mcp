@@ -1,6 +1,6 @@
 import Foundation
 
-public enum Version { public static let current = "0.1.0" }
+public enum Version { public static let current = "0.1.1" }
 
 // Model Context Protocol over stdio: one JSON-RPC message per line on stdin, one per line on stdout, logs on stderr.
 // Implements what a tools-only server needs (initialize, ping, tools/list, tools/call). Tool calls run one at a time

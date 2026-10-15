@@ -196,7 +196,8 @@ public final class Indicator {
         NSAnimationContext.runAnimationGroup {
             $0.duration = reduceMotion ? 0 : CURSOR_GLIDE
             $0.timingFunction = CAMediaTimingFunction(controlPoints: 0.3, 0.7, 0.2, 1)
-            cursor.animator().setFrameOrigin(cursorOrigin(at))
+            // setFrameOrigin is not animatable: the animator drops it silently and the cursor never moves. setFrame glides.
+            cursor.animator().setFrame(NSRect(origin: cursorOrigin(at), size: cursor.frame.size), display: true)
         }
         if click { DispatchQueue.main.asyncAfter(deadline: .now() + CURSOR_GLIDE) { [weak self] in self?.ripple() } }
     }
