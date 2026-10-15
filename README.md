@@ -57,7 +57,7 @@ Check with `mac-computer-use-mcp doctor`.
 
 macOS grants these permissions to the *responsible* process, which is normally the app that started the program: Terminal, iTerm, Ghostty, Claude, Cursor… If you granted Accessibility to your terminal, every program it runs could control your Mac.
 
-To avoid that, the server restarts itself as its own responsible process (`posix_spawn` with the *disclaim* attribute, as LLDB and Chromium do). macOS then lists and asks for **Mac Computer Use MCP** alone. `doctor` shows which process macOS holds responsible.
+To avoid that, the server, when it runs from its app, restarts itself as its own responsible process (`posix_spawn` with the *disclaim* attribute, as LLDB and Chromium do). macOS then lists and asks for **Mac Computer Use MCP** alone. `doctor` shows which process macOS holds responsible. A binary run straight from a source folder (`swift run`, `.build/…`) keeps your terminal as the responsible process.
 </details>
 
 ## Connect your agent

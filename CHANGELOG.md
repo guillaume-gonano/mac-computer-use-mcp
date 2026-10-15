@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Redesigned agent cursor, closer to Codex's: a light arrow with a thin grey edge on a soft dark halo, readable on any background.
+- The server becomes its own responsible process only when it runs from its app bundle. Run from a source folder in Documents, it used to wait for a folder-access prompt before it could even start.
 - The agent cursor glides over 0.6 s with a gentle start and landing, so the motion stays visible and the click lands as it arrives (it used to cover 80% of the way in 0.1 s, then creep).
 
 ## 0.1.1 (2026-10-15)

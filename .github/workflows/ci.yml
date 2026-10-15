@@ -22,5 +22,7 @@ jobs:
         run: swift test
       - name: Smoke test (MCP handshake with the real binary)
         run: scripts/smoke-test.sh
-      - name: App bundle
-        run: scripts/build-app.sh "$RUNNER_TEMP"
+      - name: App bundle, and the smoke test from it (restarted as its own responsible process)
+        run: |
+          APP="$(scripts/build-app.sh "$RUNNER_TEMP")"
+          scripts/smoke-test.sh "$APP/Contents/MacOS/mac-computer-use-mcp"

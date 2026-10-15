@@ -6,7 +6,7 @@ import QuartzCore
 // - a purple pill with the screen-sharing symbol laid over the traffic lights of the target window, and the same pill
 //   in the menu bar, removed BADGE_IDLE seconds after the last action; the window pill also hides while its window is
 //   off screen (minimized, another Space, closed);
-// - a drawn agent cursor (a black arrow with a white edge) that glides to each target before the action, ripples on
+// - a drawn agent cursor (a light arrow on a soft dark halo) that glides to each target before the action, ripples on
 //   clicks and sways while the agent works, then fades after CURSOR_IDLE seconds. The user's own pointer never moves.
 // Both are non-activating panels that ignore the mouse (clicks reach the window below) and are ordered just above the
 // target window: never above the user's front window, never focused. Screenshots capture the target window alone
@@ -15,7 +15,7 @@ let BADGE_SYMBOL = "rectangle.inset.filled.and.person.filled", BADGE_IDLE: TimeI
 let BADGE_COLOR = NSColor(srgbRed: 0.42, green: 0.39, blue: 0.96, alpha: 1)
 let BADGE_SIZE = NSSize(width: 66, height: 20), MENU_BADGE_SIZE = NSSize(width: 38, height: 22)
 let BADGE_OFFSET = CGPoint(x: 5, y: 6) // pill top-left from the window's top-left when no traffic lights are found
-let CURSOR_IDLE: TimeInterval = 20, CURSOR_GLIDE: TimeInterval = 0.6, CURSOR_PANEL: CGFloat = 64 // tip at its center
+let CURSOR_IDLE: TimeInterval = 20, CURSOR_GLIDE: TimeInterval = 0.6, CURSOR_PANEL: CGFloat = 96 // tip at its center
 
 func pillImage(_ size: NSSize, symbolSize: CGFloat) -> NSImage {
     let config = NSImage.SymbolConfiguration(pointSize: symbolSize, weight: .medium).applying(.init(paletteColors: [.white]))
@@ -274,11 +274,23 @@ public final class Indicator {
         view.wantsLayer = true
         let scale = NSScreen.main?.backingScaleFactor ?? 2
         view.layer?.contentsScale = scale
-        // A 24 × 24 arrow (tip at 3,2), with its tip at the panel's center, which is also the pivot.
+        // Soft dark halo under the arrow's body, as in Codex: the cursor stands out on any background. It never rotates.
+        let c = CURSOR_PANEL / 2
+        let halo = CAGradientLayer()
+        halo.name = "halo"
+        halo.type = .radial
+        halo.frame = CGRect(x: c + 7 - 34, y: c - 9 - 34, width: 68, height: 68)
+        halo.colors = [NSColor(white: 0, alpha: 0.42).cgColor, NSColor(white: 0, alpha: 0.2).cgColor, NSColor(white: 0, alpha: 0).cgColor]
+        halo.locations = [0, 0.4, 1]
+        halo.startPoint = CGPoint(x: 0.5, y: 0.5)
+        halo.endPoint = CGPoint(x: 1, y: 1)
+        halo.contentsScale = scale
+        view.layer?.addSublayer(halo)
+        // A light arrow with a thin grey edge (24 × 24, tip at 3,2), its tip at the panel's center, which is also the pivot.
         let arrow = CAShapeLayer()
         arrow.name = "arrow"
         arrow.frame = view.bounds
-        let path = CGMutablePath(), c = CURSOR_PANEL / 2
+        let path = CGMutablePath()
         let points: [(CGFloat, CGFloat)] = [(3, 2), (3, 18.5), (7.4, 14.6), (10.3, 21), (13.2, 19.7), (10.4, 13.4), (16.3, 13.1)]
         for (i, p) in points.enumerated() {
             let q = CGPoint(x: c + p.0 - 3, y: c - (p.1 - 2))
@@ -286,14 +298,14 @@ public final class Indicator {
         }
         path.closeSubpath()
         arrow.path = path
-        arrow.fillColor = NSColor(white: 0.067, alpha: 1).cgColor
-        arrow.strokeColor = NSColor.white.cgColor
-        arrow.lineWidth = 1.5
+        arrow.fillColor = NSColor(white: 0.98, alpha: 1).cgColor
+        arrow.strokeColor = NSColor(white: 0.45, alpha: 0.9).cgColor
+        arrow.lineWidth = 1
         arrow.lineJoin = .round
         arrow.shadowColor = NSColor.black.cgColor
-        arrow.shadowOpacity = 0.35
-        arrow.shadowRadius = 2
-        arrow.shadowOffset = CGSize(width: 0, height: -1)
+        arrow.shadowOpacity = 0.25
+        arrow.shadowRadius = 1
+        arrow.shadowOffset = CGSize(width: 0, height: -0.5)
         arrow.contentsScale = scale
         view.layer?.addSublayer(arrow)
         panel.contentView = view

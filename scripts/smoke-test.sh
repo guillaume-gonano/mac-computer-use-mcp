@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Starts the real binary as an MCP client would and checks the handshake, the tool list and a refused call.
 # Needs no permission and touches no app, so it runs in CI.
-#   scripts/smoke-test.sh [path to the binary]
+#   scripts/smoke-test.sh [path to the binary, or to the one inside Mac Computer Use MCP.app]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BIN="${1:-$(swift build -c release --show-bin-path)/mac-computer-use-mcp}"
@@ -28,8 +28,8 @@ print("ok (%s)" % label)
 ' "$1"
 }
 
-# Both ways of starting: as its own responsible process (default) and inside the caller's.
-session env | check "own responsible process"
-session env MAC_COMPUTER_USE_MCP_NO_DISCLAIM=1 | check "inherited responsibility"
+# Both ways of starting: by default (from an app bundle: restarted as its own responsible process) and without that.
+session env | check "default start"
+session env MAC_COMPUTER_USE_MCP_NO_DISCLAIM=1 | check "no disclaim"
 [[ "$("$BIN" version)" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "FAIL: version"; exit 1; }
 echo "Smoke test passed."

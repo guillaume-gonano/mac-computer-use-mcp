@@ -6,6 +6,9 @@ import Foundation
 // control the Mac. So the MCP server starts again as its own responsible process (posix_spawn with the "disclaim"
 // attribute, the technique used by LLDB and Chromium): permissions go to "Mac Computer Use MCP" alone.
 // The attribute is private API, looked up at run time; when it is missing we simply run without it.
+// Only from the app bundle: that is where the permissions are granted. A bare binary run from a source folder keeps
+// its terminal's responsibility, otherwise macOS would ask it for access to a protected folder (Documents, Desktop…)
+// before it could even load itself.
 
 public enum Responsibility {
     static let marker = "MAC_COMPUTER_USE_MCP_DISCLAIMED"
@@ -14,10 +17,11 @@ public enum Responsibility {
     private static let RTLD_DEFAULT = UnsafeMutableRawPointer(bitPattern: -2)
 
     /// Restarts this program as its own responsible process and exits with its status. Returns (to run normally) when
-    /// already disclaimed, when MAC_COMPUTER_USE_MCP_NO_DISCLAIM is set, or when the system does not offer it.
+    /// already disclaimed, outside an app bundle, when MAC_COMPUTER_USE_MCP_NO_DISCLAIM is set, or when the system does not offer it.
     public static func disclaimIfNeeded() {
         guard getenv(marker) == nil, getenv("MAC_COMPUTER_USE_MCP_NO_DISCLAIM") == nil,
-              let symbol = dlsym(RTLD_DEFAULT, "responsibility_spawnattrs_setdisclaim"), let path = executablePath() else { return }
+              let symbol = dlsym(RTLD_DEFAULT, "responsibility_spawnattrs_setdisclaim"), let path = executablePath(),
+              path.contains(".app/Contents/MacOS/") else { return }
         let setDisclaim = unsafeBitCast(symbol, to: SetDisclaim.self)
         var attributes: posix_spawnattr_t?
         guard posix_spawnattr_init(&attributes) == 0 else { return }
