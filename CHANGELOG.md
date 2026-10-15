@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 (2026-10-15)
 
 - Redesigned agent cursor, closer to Codex's: a rounded arrowhead without a tail (light grey, white edge) on a soft dark halo, readable on any background.
 - The server becomes its own responsible process only when it runs from its app bundle. Run from a source folder in Documents, it used to wait for a folder-access prompt before it could even start.

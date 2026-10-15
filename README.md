@@ -7,6 +7,11 @@
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-lightgrey.svg)
 ![MCP](https://img.shields.io/badge/MCP-stdio-purple.svg)
 
+<p align="center">
+  <img src="docs/demo.gif" width="706" alt="An AI agent computes 12345 + 6789, then × 2, in Calculator: its drawn cursor glides from key to key and a purple badge marks the window, while the user keeps typing a sentence in TextEdit right next to it.">
+</p>
+<p align="center"><em>The agent works in Calculator while I keep typing in TextEdit: my mouse and keyboard stay mine.</em></p>
+
 A single native binary with no dependencies. It works with any client that speaks the [Model Context Protocol](https://modelcontextprotocol.io): Claude Code, Claude Desktop, Codex, Cursor, OpenCode, or your own agent.
 
 ## Why this one
