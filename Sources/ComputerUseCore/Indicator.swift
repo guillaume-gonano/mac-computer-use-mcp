@@ -6,7 +6,7 @@ import QuartzCore
 // - a purple pill with the screen-sharing symbol laid over the traffic lights of the target window, and the same pill
 //   in the menu bar, removed BADGE_IDLE seconds after the last action; the window pill also hides while its window is
 //   off screen (minimized, another Space, closed);
-// - a drawn agent cursor (a light arrow on a soft dark halo) that glides to each target before the action, ripples on
+// - a drawn agent cursor (a rounded arrowhead on a soft dark halo) that glides to each target before the action, ripples on
 //   clicks and sways while the agent works, then fades after CURSOR_IDLE seconds. The user's own pointer never moves.
 // Both are non-activating panels that ignore the mouse (clicks reach the window below) and are ordered just above the
 // target window: never above the user's front window, never focused. Screenshots capture the target window alone
@@ -217,11 +217,11 @@ public final class Indicator {
     private func sway(_ on: Bool) {
         guard let arrow = cursor?.contentView?.layer?.sublayers?.first(where: { $0.name == "arrow" }) else { return }
         arrow.removeAnimation(forKey: "sway")
-        let base = 8 * CGFloat.pi / 180
+        let base: CGFloat = 0
         arrow.setAffineTransform(CGAffineTransform(rotationAngle: base))
         guard on, !reduceMotion else { return }
         let sway = CAKeyframeAnimation(keyPath: "transform.rotation.z")
-        sway.values = [8, 2, 11, 8].map { $0 * CGFloat.pi / 180 }
+        sway.values = [0, 5, -4, 0].map { $0 * CGFloat.pi / 180 }
         sway.duration = 2.4
         sway.repeatCount = .infinity
         sway.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
@@ -279,32 +279,32 @@ public final class Indicator {
         let halo = CAGradientLayer()
         halo.name = "halo"
         halo.type = .radial
-        halo.frame = CGRect(x: c + 7 - 34, y: c - 9 - 34, width: 68, height: 68)
-        halo.colors = [NSColor(white: 0, alpha: 0.42).cgColor, NSColor(white: 0, alpha: 0.2).cgColor, NSColor(white: 0, alpha: 0).cgColor]
-        halo.locations = [0, 0.4, 1]
+        halo.frame = CGRect(x: c + 7 - 34, y: c - 8 - 34, width: 68, height: 68)
+        halo.colors = [NSColor(white: 0, alpha: 0.38).cgColor, NSColor(white: 0, alpha: 0.16).cgColor, NSColor(white: 0, alpha: 0).cgColor]
+        halo.locations = [0, 0.45, 1]
         halo.startPoint = CGPoint(x: 0.5, y: 0.5)
         halo.endPoint = CGPoint(x: 1, y: 1)
         halo.contentsScale = scale
         view.layer?.addSublayer(halo)
-        // A light arrow with a thin grey edge (24 × 24, tip at 3,2), its tip at the panel's center, which is also the pivot.
+        // A rounded arrowhead without a tail, as in Codex: light grey fill, white edge, its tip at the panel's center (the pivot).
         let arrow = CAShapeLayer()
         arrow.name = "arrow"
         arrow.frame = view.bounds
         let path = CGMutablePath()
-        let points: [(CGFloat, CGFloat)] = [(3, 2), (3, 18.5), (7.4, 14.6), (10.3, 21), (13.2, 19.7), (10.4, 13.4), (16.3, 13.1)]
+        let points: [(CGFloat, CGFloat)] = [(0, 0), (4.2, 17.5), (8.2, 10.2), (17.5, 8.6)] // tip, bottom point, notch, right point
         for (i, p) in points.enumerated() {
-            let q = CGPoint(x: c + p.0 - 3, y: c - (p.1 - 2))
+            let q = CGPoint(x: c + p.0, y: c - p.1)
             if i == 0 { path.move(to: q) } else { path.addLine(to: q) }
         }
         path.closeSubpath()
         arrow.path = path
-        arrow.fillColor = NSColor(white: 0.98, alpha: 1).cgColor
-        arrow.strokeColor = NSColor(white: 0.45, alpha: 0.9).cgColor
-        arrow.lineWidth = 1
+        arrow.fillColor = NSColor(white: 0.86, alpha: 0.92).cgColor
+        arrow.strokeColor = NSColor.white.cgColor
+        arrow.lineWidth = 2
         arrow.lineJoin = .round
         arrow.shadowColor = NSColor.black.cgColor
-        arrow.shadowOpacity = 0.25
-        arrow.shadowRadius = 1
+        arrow.shadowOpacity = 0.45
+        arrow.shadowRadius = 1.2
         arrow.shadowOffset = CGSize(width: 0, height: -0.5)
         arrow.contentsScale = scale
         view.layer?.addSublayer(arrow)
